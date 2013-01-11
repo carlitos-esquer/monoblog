@@ -1,0 +1,9 @@
+h1 Editar un artículo!
+form action="/articulo/#{@articulo.id}" method="post"
+	input type="hidden" name="_method" value="PUT"
+	p
+		label for="titulo" Titulo:
+		input name="titulo" type="text" value="#{@articulo.titulo}"
+	p
+		textarea name="contenido" rows="20" cols="40" #{@articulo.contenido}
+	input type="submit" value="Guardar"
