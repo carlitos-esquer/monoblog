@@ -1,5 +1,5 @@
-require './perfil'
-require './blog'
+#require './perfil'
+require_relative './blog'
 #Clase que define un usuario de nuestros Blogs
 
 class Usuario

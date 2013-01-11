@@ -1,33 +1,54 @@
 ﻿require 'monoriel'
+require_relative 'activestore' 
+require_relative 'models/usuario'
 require 'slim'
 
 class App
 	include Monoriel
+	def initialize
+		@blog = ActiveStore.new "blog.store"
+	end
 	def index
+		@articulos = @blog.list
 		slim :index
 	end
-	def blogs
-		"Blogs del usuario"
-	end
 	def usuario
-		"Usuario: Carlitos"
-	end
-	def articulo_por_fecha(day,month,year)
-		#day = args.shift
-		#month = args.shift
-		#year = args.last
-		"<h1>Articulos para el dia #{day}/#{month}/#{year}</h1>"
+		slim :usuario
 	end
 	def articulo(id)
-		#id = args.first
-		@res['Content-Type'] = "text/html;charset=utf-8"
-		"<h1>Articulo #{id}</h1><br>" +
-		"<h2>Como escribir un Blog</h2><br>" +
-		"<p>Información básica del blog </p>" +
-		"<p><a href='/'>Inicio</a>"
+		@articulo = @blog.read id.to_i
+		puts @articulo.to_s
+		slim :articulo
 	end
-	def eventos
-		slim :eventos
+	def articulo_new
+		slim :articulo_new
+	end
+	def articulo_edit(id)
+		@articulo = @blog.read id.to_i
+		slim :articulo_edit unless @articulo.nil?
+	end
+	def articulo_destroy(id)
+		@articulo = @blog.read id.to_i
+		slim :articulo_delete
+	end
+	def post_articulo
+		key = @blog.keys.last.nil? ? 1 : @blog.keys.last + 1
+		@articulo = Articulo.new key, @r.params["titulo"]
+		puts @articulo.to_s
+		@articulo.contenido = @r.params["contenido"]
+		@blog.create key, @articulo
+		index
+	end
+	def put_articulo(id)
+		@articulo = @blog.read id.to_i
+		@articulo.titulo = @r.params["titulo"]
+		@articulo.contenido = @r.params["contenido"]
+		@blog.update id.to_i, @articulo
+		index
+	end
+	def delete_articulo(id)
+		@blog.delete id.to_i
+		index
 	end
 	def not_found(*args)
 		slim :not_found
